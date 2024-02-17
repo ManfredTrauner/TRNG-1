@@ -1,5 +1,6 @@
 /*
 Simple counter with generic bitwidth .
+https://github.com/ManfredTrauner/TRNG-1
 */
 
 ‘default_nettype none
