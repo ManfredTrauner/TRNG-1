@@ -54,6 +54,7 @@ endmodule
 
 
 module RS_ff(output reg Q, output reg Q_n, input R, input S);
+(* nosynccheck *)
   wire Q_next, Q_n_next;
   
   // Implementing RS flip-flop logic using NAND gates
