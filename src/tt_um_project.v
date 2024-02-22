@@ -57,6 +57,8 @@ endmodule
 
 
 module RS_ff(output reg Q, output reg Q_n, input R, input S);
+
+/*
 (* nosynccheck *)
   wire Q_next, Q_n_next;
   
@@ -72,6 +74,25 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
       Q_n <= Q_n_next;
     end
     if (Q) begin // Synchronizing to Q
+      Q <= Q_next;
+      Q_n <= Q_n_next;
+    end
+  end
+*/
+
+(* nosynccheck *)
+  // Define internal signals
+  reg Q_next, Q_n_next;
+  
+  // Implementing RS flip-flop logic using NAND gates
+  always @(R, S) begin
+    Q_next = (~S & Q_n);
+    Q_n_next = (~R & Q);
+  end
+
+  // Sequential logic to update the flip-flop outputs
+  always @(posedge Q or posedge Q_n) begin
+    if (Q_n) begin // Synchronizing to Q_n
       Q <= Q_next;
       Q_n <= Q_n_next;
     end
