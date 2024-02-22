@@ -6,7 +6,7 @@
 /* verilator lint_off DECLFiLENAME */
 
 `define default_netname none
-`include "mscell_01s.v"
+//`include "mscell_01s.v"
 
 module tt_um_project (
     input  wire [7:0] ui_in,    // Dedicated inputs
@@ -27,6 +27,7 @@ module tt_um_project (
   assign uio_out[7:3] = 0;
   assign uio_oe  = 0;
 
+/*
 mscell_01 entUnit01 (.clk_entropy(clk),
                      .clk_sampling(clk),
                      .en_Samp_in0(0),
@@ -35,8 +36,22 @@ mscell_01 entUnit01 (.clk_entropy(clk),
                      .Y(Y)); 
 
 assign uio_out[3] = Y;
+*/
+
+assign A = ui_in[0];
+assign B = ui_in[1];
+
+supply1 VDD;
+ supply0 VSS;
+ wire between;
+ pmos(Y,VDD,A),(Y,VDD,B);
+ nmos(Y,between,A),(between,VSS,B);
+
+assign uio_out = Y;
 
 endmodule
+
+`default_nettype wire
 
 /* verlator Lint_on DECLFILENMAME */
 
