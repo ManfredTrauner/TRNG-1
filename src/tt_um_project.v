@@ -24,7 +24,7 @@ module tt_um_project (
   assign uio_out[0] = ena;
   assign uio_out[1] = clk;
   assign uio_out[2] = rst_n;
-  assign uio_out[7:6] = 0;
+  assign uio_out[7:4] = 0;
   assign uio_oe  = 0;
 
 /*
@@ -38,6 +38,7 @@ mscell_01 entUnit01 (.clk_entropy(clk),
 assign uio_out[3] = Y;
 */
 
+/*
 wire Q;
 wire Q_n;
 wire R;
@@ -50,16 +51,18 @@ RS_ff cel1 (.Q(Q), .Q_n(Q_n), .R(R), .S(S));
 assign uio_out[3] = Q;
 assign uio_out[4] = Q_n;
 
+*/
 wire rout;
 ring_osc osc1 (.out(rout));
-assign uio_out[5] = rout;
+assign uio_out[3] = rout;
 
 
 
 endmodule
-
+/*
 
 module RS_ff(output reg Q, output reg Q_n, input R, input S);
+*/
 
 /*
 (* nosynccheck *)
@@ -84,6 +87,7 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
 */
 
 /* verilator lint_off UNOPTFLAT */ //Signal unoptimizable: Circular combinational logic
+/*
 (* nosynccheck *)
   // Define internal signals
   reg Q_next, Q_n_next;
@@ -101,7 +105,7 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
    end
 
  /* verilator lint_on UNOPTFLAT */  
-endmodule
+//endmodule
 
 
 module ring_osc(output out);
