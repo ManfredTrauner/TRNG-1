@@ -24,7 +24,7 @@ module tt_um_project (
   assign uio_out[0] = ena;
   assign uio_out[1] = clk;
   assign uio_out[2] = rst_n;
-  assign uio_out[7:4] = 0;
+  assign uio_out[7:5] = 0;
   assign uio_oe  = 0;
 
 /*
@@ -38,29 +38,37 @@ mscell_01 entUnit01 (.clk_entropy(clk),
 assign uio_out[3] = Y;
 */
 
-wire A;
-wire B;
-wire Y;
-assign A = ui_in[0];
-assign B = ui_in[1];
+wire Q;
+wire Q_n;
+wire R;
+wire S;
+assign R = clk;
+assign S = 0;
 
-/*
-supply1 VDD;
- supply0 VSS;
- wire between;
- pmos(Y,VDD,A),(Y,VDD,B);
- nmos(Y,between,A),(between,VSS,B);
-*/
-assign Y = ~(A & B);
+RS_ff cel1 (.Q(Q), .Q_n(Q_n), .R(R), .S(S));
 
-
-assign uio_out[3] = Y;
+assign uio_out[3] = Q;
+assign uio_out[4] = Q_n;
 
 endmodule
 
+
+module RS_ff(output reg Q, output reg Q_n, input R, input S);
+  wire Q_next, Q_n_next;
+  
+  // Implementing RS flip-flop logic using NAND gates
+  assign Q_next = ~(S & Q_n);
+  assign Q_n_next = ~(R & Q);
+
+  // Sequential logic to update the flip-flop outputs
+  always @(posedge Q_n or posedge Q) begin
+    Q <= Q_next; //using nonblocking to provide 
+    Q_n <= Q_n_next;
+  end
+endmodule
+
+
+
 `default_nettype wire
-
 /* verlator Lint_on DECLFILENMAME */
-
-
 
