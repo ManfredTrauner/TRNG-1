@@ -50,6 +50,9 @@ RS_ff cel1 (.Q(Q), .Q_n(Q_n), .R(R), .S(S));
 assign uio_out[3] = Q;
 assign uio_out[4] = Q_n;
 
+
+
+
 endmodule
 
 
@@ -63,12 +66,15 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
 
   // Sequential logic to update the flip-flop outputs
   //always @(posedge Q_n or posedge Q) begin
-  always @(posedge Q) begin
-    Q <= Q_next; //using nonblocking to provide 
-    Q_n <= Q_n_next;
+  always @(posedge Q or posedge Q_n) begin
+    if (Q_n) begin // Synchronizing to Q_n
+      Q <= Q_next;
+      Q_n <= Q_n_next;
+    end
   end
-endmodule
 
+  
+endmodule
 
 
 `default_nettype wire
