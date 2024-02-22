@@ -53,77 +53,32 @@ assign uio_out[4] = Q_n;
 
 */
 wire rout;
-ring_osc osc1 (.out(rout));
+ring_osc3 osc (.clk(clk), .out(rout));
 assign uio_out[3] = rout;
 
+endmodule
 
+
+module ring_osc3 (
+    input wire clk,
+    output reg out
+);
+
+reg [2:0] stages; // Register to hold the state of each stage
+wire feedback;    // Feedback signal from the last stage to the first
+
+assign feedback = stages[2]; // Connect the output of the last stage to the first stage input
+
+// Instantiate three inverters (you can adjust the number of stages as needed)
+// Each stage is a D flip-flop with its input connected to the output of the previous stage
+always @(posedge clk) begin
+    stages <= {stages[1:0], feedback}; // Shift the stages and feed the feedback to the first stage
+end
+
+assign out = stages[2]; // Output the state of the last stage
 
 endmodule
-/*
 
-module RS_ff(output reg Q, output reg Q_n, input R, input S);
-*/
-
-/*
-(* nosynccheck *)
-  wire Q_next, Q_n_next;
-  
-  // Implementing RS flip-flop logic using NAND gates
-  assign Q_next = ~(S & Q_n);
-  assign Q_n_next = ~(R & Q);
-
-  // Sequential logic to update the flip-flop outputs
-  //always @(posedge Q_n or posedge Q) begin
-  always @(posedge Q or posedge Q_n) begin
-    if (Q_n) begin // Synchronizing to Q_n
-      Q <= Q_next;
-      Q_n <= Q_n_next;
-    end
-    if (Q) begin // Synchronizing to Q
-      Q <= Q_next;
-      Q_n <= Q_n_next;
-    end
-  end
-*/
-
-/* verilator lint_off UNOPTFLAT */ //Signal unoptimizable: Circular combinational logic
-/*
-(* nosynccheck *)
-  // Define internal signals
-  reg Q_next, Q_n_next;
-  
-  // Implementing RS flip-flop logic using NAND gates
-  always @(R, S) begin
-    Q_next <= (~S & Q_n);
-    Q_n_next <= (~R & Q);
-  end
-
-  // Sequential logic to update the flip-flop outputs
-  always @(Q_next, Q_n_next) begin
-      Q <= Q_next;
-      Q_n <= Q_n_next;
-   end
-
- /* verilator lint_on UNOPTFLAT */  
-//endmodule
-
-
-module ring_osc(output out);
-(* nosynccheck *)
-  /* verilator lint_off UNOPTFLAT */ //Signal unoptimizable: Circular combinational logic
-    reg inv1, inv2, inv3;
-    
-    // Define the ring oscillator loop
-    always @(*) begin
-        inv1 = ~inv3;
-        inv2 = ~inv1;
-        inv3 = ~inv2;
-    end
-    
-    // Output of the ring oscillator
-    assign out = inv3;
- /* verilator lint_on UNOPTFLAT */
-endmodule
 
 
 `default_nettype wire
