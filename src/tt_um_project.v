@@ -24,7 +24,7 @@ module tt_um_project (
   assign uio_out[0] = ena;
   assign uio_out[1] = clk;
   assign uio_out[2] = rst_n;
-  assign uio_out[7:3] = 0;
+  assign uio_out[7:4] = 0;
   assign uio_oe  = 0;
 
 /*
@@ -38,6 +38,9 @@ mscell_01 entUnit01 (.clk_entropy(clk),
 assign uio_out[3] = Y;
 */
 
+wire A;
+wire B;
+wire Y;
 assign A = ui_in[0];
 assign B = ui_in[1];
 
@@ -47,7 +50,7 @@ supply1 VDD;
  pmos(Y,VDD,A),(Y,VDD,B);
  nmos(Y,between,A),(between,VSS,B);
 
-assign uio_out = Y;
+assign uio_out[3] = Y;
 
 endmodule
 
