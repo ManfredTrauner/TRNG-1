@@ -6,6 +6,7 @@
 /* verilator lint_off DECLFiLENAME */
 
 `define default_netname none
+`include "mscell_01s.v"
 
 module tt_um_project (
     input  wire [7:0] ui_in,    // Dedicated inputs
@@ -25,6 +26,15 @@ module tt_um_project (
   assign uio_out[2] = rst_n;
   assign uio_out[7:3] = 0;
   assign uio_oe  = 0;
+
+mscell_01 entUnit01 (.clk_entropy(clk),
+                     .clk_sampling(clk),
+                     .en_Samp_in0(0),
+                     .en_Samp_in1(0),
+                     .en_Samp_out(0),
+                     .Y(Y)); 
+
+assign uio_out[3] = Y;
 
 endmodule
 
