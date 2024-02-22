@@ -44,11 +44,15 @@ wire Y;
 assign A = ui_in[0];
 assign B = ui_in[1];
 
+/*
 supply1 VDD;
  supply0 VSS;
  wire between;
  pmos(Y,VDD,A),(Y,VDD,B);
  nmos(Y,between,A),(between,VSS,B);
+*/
+ Y = ~(A & B)
+
 
 assign uio_out[3] = Y;
 
