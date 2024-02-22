@@ -43,7 +43,7 @@ wire Q_n;
 wire R;
 wire S;
 assign R = clk;
-assign S = 0;
+assign S = clk;
 
 RS_ff cel1 (.Q(Q), .Q_n(Q_n), .R(R), .S(S));
 
@@ -68,6 +68,10 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
   //always @(posedge Q_n or posedge Q) begin
   always @(posedge Q or posedge Q_n) begin
     if (Q_n) begin // Synchronizing to Q_n
+      Q <= Q_next;
+      Q_n <= Q_n_next;
+    end
+    if (Q) begin // Synchronizing to Q
       Q <= Q_next;
       Q_n <= Q_n_next;
     end
