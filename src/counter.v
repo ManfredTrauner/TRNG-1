@@ -1,11 +1,10 @@
 /*
-Simple counter with generic bitwidth .
-https://github.com/ManfredTrauner/TRNG-1
+ Simple counter with generic bitwidth .
 */
 
-‘default_nettype none
-‘ifndef __COUNTER__
-‘define __COUNTER__
+`default_nettype none
+`ifndef __COUNTER__
+`define __COUNTER__
 
 module counter
  #(
@@ -28,16 +27,16 @@ module counter
  always @ ( posedge clk_i ) begin
  // gets active always when a positive edge of the clock signal occours
 
- if ( rst_i == 1 ’ b1 ) begin
- // if reset is enabled
- counter_val <= { BW {1 ’ b0 }}; // reset the counter value
- end else begin
- // increment the counter value by 1
- counter_val <= counter_val + {{( BW -1) {1 ’ b0 }} , 1 ’ b1 };
- end
+    if ( rst_i == 1'b1 ) begin
+        // if reset is enabled
+        counter_val <= { BW {1'b0 }}; // reset the counter value
+    end else begin
+        // increment the counter value by 1
+        counter_val <= counter_val + {{( BW -1) {1'b0 }} , 1'b1 };
+    end
  end
 
  endmodule // counter
 
-‘endif
-‘default_nettype wire
+ `endif
+ `default_nettype wire 
