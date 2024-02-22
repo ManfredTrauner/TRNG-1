@@ -62,7 +62,8 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
   assign Q_n_next = ~(R & Q);
 
   // Sequential logic to update the flip-flop outputs
-  always @(posedge Q_n or posedge Q) begin
+  //always @(posedge Q_n or posedge Q) begin
+  always @(posedge Q) begin
     Q <= Q_next; //using nonblocking to provide 
     Q_n <= Q_n_next;
   end
