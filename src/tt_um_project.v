@@ -51,7 +51,7 @@ supply1 VDD;
  pmos(Y,VDD,A),(Y,VDD,B);
  nmos(Y,between,A),(between,VSS,B);
 */
- Y = ~(A & B)
+assign Y = ~(A & B);
 
 
 assign uio_out[3] = Y;
