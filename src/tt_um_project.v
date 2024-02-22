@@ -24,7 +24,7 @@ module tt_um_project (
   assign uio_out[0] = ena;
   assign uio_out[1] = clk;
   assign uio_out[2] = rst_n;
-  assign uio_out[7:5] = 0;
+  assign uio_out[7:6] = 0;
   assign uio_oe  = 0;
 
 /*
@@ -50,6 +50,9 @@ RS_ff cel1 (.Q(Q), .Q_n(Q_n), .R(R), .S(S));
 assign uio_out[3] = Q;
 assign uio_out[4] = Q_n;
 
+wire rout;
+ring_osc osc1 (.out(rout));
+assign uio_out[5] = rout;
 
 
 
@@ -80,25 +83,42 @@ module RS_ff(output reg Q, output reg Q_n, input R, input S);
   end
 */
 
+/* verilator lint_off UNOPTFLAT */ //Signal unoptimizable: Circular combinational logic
 (* nosynccheck *)
   // Define internal signals
   reg Q_next, Q_n_next;
   
   // Implementing RS flip-flop logic using NAND gates
   always @(R, S) begin
-    Q_next = (~S & Q_n);
-    Q_n_next = (~R & Q);
+    Q_next <= (~S & Q_n);
+    Q_n_next <= (~R & Q);
   end
 
   // Sequential logic to update the flip-flop outputs
-  always @(posedge Q or posedge Q_n) begin
-    if (Q_n) begin // Synchronizing to Q_n
+  always @(Q_next, Q_n_next) begin
       Q <= Q_next;
       Q_n <= Q_n_next;
-    end
-  end
+   end
 
-  
+ /* verilator lint_on UNOPTFLAT */  
+endmodule
+
+
+module ring_osc(output out);
+(* nosynccheck *)
+  /* verilator lint_off UNOPTFLAT */ //Signal unoptimizable: Circular combinational logic
+    reg inv1, inv2, inv3;
+    
+    // Define the ring oscillator loop
+    always @(*) begin
+        inv1 = ~inv3;
+        inv2 = ~inv1;
+        inv3 = ~inv2;
+    end
+    
+    // Output of the ring oscillator
+    assign out = inv3;
+ /* verilator lint_on UNOPTFLAT */
 endmodule
 
 
