@@ -32,7 +32,7 @@ wire w_TempSimu;
 assign w_TempSimu = 1'b0; //-> link to input
 
 
-entUnit_noN #(32) main (
+entUnit_noN #(6) main (
     .i_clk(clk),
     .i_resSyncCircuit_n(rst_n),
     .i_clkSimulation(w_TempSimu),
