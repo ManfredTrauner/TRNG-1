@@ -53,7 +53,7 @@ freq_div fDiv (
 //longest chain: 13 inverters
 //overall number of inverters: 48
 
-entUnit_noN #(7) main (
+entUnit_noN #(6) main (
     .i_clk(w_syncClk),
     .i_resSyncCircuit_n(rst_n),
     .i_clkSimulation(w_TempSimu),
