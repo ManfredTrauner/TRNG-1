@@ -1,15 +1,26 @@
-/*
- * Copyright (c) 2024 Your Name
- * SPDX-License-Identifier: Apache-2.0
- */
+// Copyright 2024 Manfred Trauner
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE−2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 `define default_netname none
-
 
 module tt_um_project (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
+    /* verilator lint_off UNUSEDSIGNAL */
     input  wire [7:0] uio_in,   // IOs: Input path
+    /* verilator lint_on UNUSEDSIGNAL */
     output wire [7:0] uio_out,  // IOs: Output path
     output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
     input  wire       ena,      // will go high when the design is enabled
@@ -18,12 +29,9 @@ module tt_um_project (
   );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out[0] = ena;
-  //assign uio_out[1] = clk;
-  assign uio_out[3] = rst_n;
-  assign uio_out[7:4] = 0;
-  assign uio_oe  = 8'b1111_1111;
+  //assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
+  assign uio_out[7:0] = 8'b0000_0000;
+  assign uio_oe  = 8'b0000_0000;
 
 
 wire w_outTempRand;
@@ -31,21 +39,83 @@ wire w_outTempEnable;
 wire w_TempSimu;
 assign w_TempSimu = 1'b0; //-> link to input
 
+wire w_syncClk;
+freq_div fDiv (
+    .i_clk(clk),
+    .i_rst_n(rst_n),
+    .i_divider_value(ui_in),
+    .o_clk(w_syncClk)
+);
+
+//#32 are too much for chip area; #8 also (utilisation 0.81)
+//running with 6 chains
+//shortest chain: 3 inverters 
+//longest chain: 13 inverters
+//overall number of inverters: 48
 
 entUnit_noN #(6) main (
-    .i_clk(clk),
+    .i_clk(w_syncClk),
     .i_resSyncCircuit_n(rst_n),
     .i_clkSimulation(w_TempSimu),
-    .i_enSim(ui_in[0]),
+    .i_enSim(uio_in[0]),
     .o_random(w_outTempRand),
     .o_enChain(w_outTempEnable)
 );
-assign uio_out[1] = w_outTempRand;
-assign uio_out[2] = w_outTempEnable;
+
+assign uo_out[0] = clk;
+assign uo_out[1] = w_syncClk;
+assign uo_out[2] = ena;
+assign uo_out[3] = w_outTempRand;
+assign uo_out[4] = w_outTempEnable;
+assign uo_out[5] = 1'b0;
+assign uo_out[6] = w_outTempRandUnbiased;
+assign uo_out[7] = w_outTempValidUnbiased;
+
+wire w_outTempRandUnbiased;
+wire w_outTempValidUnbiased;
+
+deBias deBias1 (
+    .i_clk(w_syncClk),
+    .i_reset_n(rst_n),
+    .i_enSim(w_outTempEnable),    
+    .i_random(w_outTempRand),
+    .o_random(w_outTempRandUnbiased),
+    .o_valid(w_outTempValidUnbiased)
+);
+
 endmodule
 
 
-//---------------------------------
+// end main-module
+/* verilator lint_off DECLFILENAME */
+
+module freq_div (
+    input wire i_clk,         // Eingangstakt
+    input wire i_rst_n,       // Reset-Eingang (negierter Reset)
+    input [7:0] i_divider_value,
+    output reg o_clk      // Ausgangstakt
+);
+
+reg [7:0] counter; // 8-Bit-Zähler für die Frequenzteilung
+
+// Reset-Logik
+always @(posedge i_clk or negedge i_rst_n) begin
+    if (~i_rst_n) begin
+        counter <= 0; // Zähler zurücksetzen
+        o_clk <= 0; // Ausgangstakt zurücksetzen
+    end else begin
+        // Zähler inkrementieren und Ausgangstakt erzeugen
+        if (counter == 0) begin
+            counter <= (i_divider_value - 1);
+            o_clk <= ~ o_clk; // Ausgangstakt umschalten
+        end else begin
+            counter <= counter - 1; // Zähler verringern
+        end
+    end
+end
+
+endmodule
+
 
 /*
  de-bias.v
@@ -59,7 +129,6 @@ module flipflop_D_clk_res (
     output reg o_Q
 */
 
-/*
 module deBias (
     input wire i_clk,
     input wire i_reset_n,
@@ -88,7 +157,7 @@ assign o_random = w_outFF1;
 assign w_outG4 = w_outXOR & w_outFF3;
 assign o_valid = w_outG4;
 endmodule
-*/
+
 
 
 /*
@@ -114,7 +183,7 @@ module gate_XOR_n #(parameter WIDTH = 3) (
 );
 */
 
-/* verilator lint_off DECLFILENAME */
+
 module entUnit_noN #(
     parameter no_RingOsc = 3, 
     parameter switch_feedback = 1  //switch_feedback == 1: feedback-loop is closed for operation
@@ -161,6 +230,7 @@ gate_XOR_n #(no_RingOsc) gate01 (
 assign o_random = w_outXOR;
 assign o_enChain = w_enChain[no_RingOsc];
 endmodule
+
 /* verilator lint_on DECLFILENAME */
 
 /*
