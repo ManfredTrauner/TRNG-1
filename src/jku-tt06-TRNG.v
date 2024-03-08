@@ -15,7 +15,7 @@
 
 `define default_netname none
 
-module tt_um_project (
+module jku-tt06-TRNG (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     /* verilator lint_off UNUSEDSIGNAL */
@@ -82,7 +82,6 @@ deBias deBias1 (
     .o_random(w_outTempRandUnbiased),
     .o_valid(w_outTempValidUnbiased)
 );
-
 endmodule
 
 

@@ -18,7 +18,7 @@ COMPILE_ARGS 		+= -I$(SRC_DIR)
 else
 
 # Gate level simulation:
-SIM_BUILD				= sim_build/gl
+SIM_BUILD	     = sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DUSE_POWER_PINS
@@ -33,8 +33,8 @@ VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 endif
 
 # Include the testbench sources:
-VERILOG_SOURCES += $(PWD)/tb.v 
-TOPLEVEL = tb
+#VERILOG_SOURCES += $(PWD)/tb.v 
+#TOPLEVEL = tb
 
 # MODULE is the basename of the Python test file
 MODULE = test
