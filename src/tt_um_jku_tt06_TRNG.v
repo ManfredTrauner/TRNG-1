@@ -15,7 +15,7 @@
 
 `define default_netname none
 
-module jku-tt06-TRNG (
+module tt_um_jku_tt06_TRNG (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     /* verilator lint_off UNUSEDSIGNAL */

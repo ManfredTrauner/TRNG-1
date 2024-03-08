@@ -11,11 +11,11 @@ project:
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "jku-tt06-TRNG"
+  top_module:  "tt_um_jku_tt06_TRNG"
   
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
-    - "jku-tt06-TRNG.v"
+    - "tt_um_jku_tt06_TRNG.v"
  #   - "mscell_01.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
