@@ -5,7 +5,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v
+PROJECT_SOURCES = tt_um_jku_tt06_TRNG.v
 
 ifneq ($(GATES),yes)
 
@@ -40,4 +40,4 @@ endif
 MODULE = test
 
 # include cocotb's make rules to take care of the simulator setup
-# include $(shell cocotb-config --makefiles)/Makefile.sim
+include $(shell cocotb-config --makefiles)/Makefile.sim
